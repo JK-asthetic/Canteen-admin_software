@@ -1,16 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Store,
   Plus,
   Edit,
   Trash2,
-  Building2,
-  MapPin,
-  User,
-  Check,
-  Search,
   ArrowLeft,
   ChefHat,
   TrendingUp,
@@ -50,30 +45,30 @@ export default function ManageCanteen() {
     }
   };
 
-  const handleAddCanteen = async (newCanteen: CreateCanteenDto) => {
+  const handleAddCanteen = useCallback(async (newCanteen: CreateCanteenDto) => {
     try {
       const created = await createCanteen(newCanteen);
-      setCanteens([...canteens, created]);
+      setCanteens(prevCanteens => [...prevCanteens, created]);
       alert("Canteen added successfully!");
     } catch (err) {
       console.error("Error adding canteen:", err);
       alert("Failed to add canteen!");
     }
-  };
+  }, []);
 
-  const handleEditCanteen = async (
+  const handleEditCanteen = useCallback(async (
     id: string,
     updatedData: UpdateCanteenDto
   ) => {
     try {
       const updated = await updateCanteen(id, updatedData);
-      setCanteens(canteens.map((c) => (c._id === id ? updated : c)));
+      setCanteens(prevCanteens => prevCanteens.map((c) => (c._id === id ? updated : c)));
       alert("Canteen updated successfully!");
     } catch (err) {
       console.error("Error updating canteen:", err);
       alert("Failed to update canteen!");
     }
-  };
+  }, []);
 
   const menuItems = [
     {

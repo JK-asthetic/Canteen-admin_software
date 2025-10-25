@@ -62,7 +62,7 @@ apiClient.interceptors.response.use(
       removeToken();
       // Optional: Redirect to login page
       if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     }
     

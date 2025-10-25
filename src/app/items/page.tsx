@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Package, Eye, Plus, Edit, ArrowLeft } from "lucide-react";
-import { getItems, createItem, updateItem, deleteItem } from "@/api/item";
+import { getItems, createItem, updateItem } from "@/api/item";
 import { Item, CreateItemDto, UpdateItemDto } from "@/types/Item.types";
 import { ViewStock } from "@/components/items/ViewStock";
 import { AddStock } from "@/components/items/AddStock";

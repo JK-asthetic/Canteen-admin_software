@@ -10,6 +10,7 @@ import React, {
 import { useRouter, usePathname } from "next/navigation";
 import * as authApi from "../api/auth";
 import { User } from "../types/auth.types";
+import { storage } from "@/lib/storage";
 
 interface AuthContextProps {
   isLoading: boolean;
@@ -33,7 +34,6 @@ const initialAuthContext: AuthContextProps = {
 
 export const AuthContext = createContext<AuthContextProps>(initialAuthContext);
 
-// Custom hook to use auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -54,17 +54,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Public routes that don't require authentication
-  const publicRoutes = ["/login"];
+  const publicRoutes = ["/"];
   const isPublicRoute = publicRoutes.includes(pathname);
 
-  // Load token from storage on app start
   useEffect(() => {
     const bootstrapAsync = async (): Promise<void> => {
       let token = null;
       try {
         if (typeof window !== "undefined") {
-          token = localStorage.getItem("userToken");
+          token = await storage.getItem("userToken");
           setUserToken(token);
 
           if (token) {
@@ -72,25 +70,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               const userData = await authApi.getCurrentUser();
               setUser(userData);
 
-              // If user is on login page and authenticated, redirect to home
               if (isPublicRoute) {
-                router.push("/");
+                router.push("/dashboard");
               }
             } catch (error) {
               console.error("Error getting current user:", error);
-              localStorage.removeItem("userToken");
+              await storage.removeItem("userToken");
               setUserToken(null);
               setUser(null);
 
-              // Redirect to login if not on public route
               if (!isPublicRoute) {
-                router.push("/login");
+                router.push("/");
               }
             }
           } else {
-            // No token, redirect to login if not on public route
             if (!isPublicRoute) {
-              router.push("/login");
+              router.push("/");
             }
           }
         }
@@ -100,7 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(null);
 
         if (!isPublicRoute) {
-          router.push("/login");
+          router.push("/");
         }
       } finally {
         setIsLoading(false);
@@ -117,15 +112,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { token, user } = response;
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("userToken", token);
+        await storage.setItem("userToken", token);
       }
 
       setUserToken(token);
       setUser(user);
       setIsSignout(false);
 
-      // Redirect to home page after successful login
-      router.push("/");
+      router.push("/dashboard");
     } catch (error) {
       throw error;
     } finally {
@@ -138,23 +132,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsLoading(true);
       setIsSignout(true);
 
-      // Clear state first
       setUserToken(null);
       setUser(null);
 
-      // Then clear storage and call logout API
       if (typeof window !== "undefined") {
-        localStorage.removeItem("userToken");
+        await storage.removeItem("userToken");
       }
 
       await authApi.logout();
 
-      // Redirect to login
-      router.push("/login");
+      router.push("/");
     } catch (error: unknown) {
       console.error("Error signing out:", error);
-      // Still redirect to login even if API call fails
-      router.push("/login");
+      router.push("/");
     } finally {
       setIsLoading(false);
     }
@@ -169,15 +159,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Error getting current user:", error);
 
       if (typeof window !== "undefined") {
-        localStorage.removeItem("userToken");
+        await storage.removeItem("userToken");
       }
 
       setUserToken(null);
       setUser(null);
 
-      // Redirect to login
       if (!isPublicRoute) {
-        router.push("/login");
+        router.push("/");
       }
 
       return null;

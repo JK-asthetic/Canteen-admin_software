@@ -34,7 +34,7 @@ export function EditUser({ users, onEdit }: EditUserProps) {
       name: user.name,
       email: user.email,
       role: user.role,
-      canteen_id: user.canteen_id,
+      canteen_id: typeof user.canteen_id === 'string' ? user.canteen_id : user.canteen_id?._id,
     });
   };
 

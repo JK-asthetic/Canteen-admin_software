@@ -3,10 +3,16 @@
 import { useEffect, useState } from "react";
 import { Package, Eye, Plus, Edit, ArrowLeft } from "lucide-react";
 import { getItems, createItem, updateItem } from "@/api/item";
+import { createCategory } from "@/api/category";
+import { createUnit } from "@/api/unit";
 import { Item, CreateItemDto, UpdateItemDto } from "@/types/Item.types";
+import { CreateCategoryDto } from "@/types/category.types";
+import { CreateUnitDto } from "@/types/unit.types";
 import { ViewStock } from "@/components/items/ViewStock";
 import { AddStock } from "@/components/items/AddStock";
 import { EditStock } from "@/components/items/EditStock";
+import { AddCategory } from "@/components/items/AddCategory";
+import { AddUnit } from "@/components/items/AddUnit";
 import { useRouter } from "next/navigation";
 
 export default function ManageStock() {
@@ -58,10 +64,36 @@ export default function ManageStock() {
     setLoading(false);
   };
 
+  const handleAddCategory = async (categoryData: CreateCategoryDto) => {
+    try {
+      setLoading(true);
+      await createCategory(categoryData);
+      alert("Category added successfully!");
+    } catch (error) {
+      console.error("Error adding category:", error);
+      alert("Failed to add category");
+    }
+    setLoading(false);
+  };
+
+  const handleAddUnit = async (unitData: CreateUnitDto) => {
+    try {
+      setLoading(true);
+      await createUnit(unitData);
+      alert("Unit added successfully!");
+    } catch (error) {
+      console.error("Error adding unit:", error);
+      alert("Failed to add unit");
+    }
+    setLoading(false);
+  };
+
   const menuItems = [
     { id: "view", label: "View Items", icon: Eye, color: "purple" },
     { id: "add", label: "Add Item", icon: Plus, color: "blue" },
     { id: "edit", label: "Edit Item", icon: Edit, color: "green" },
+    { id: "add-category", label: "Add Category", icon: Plus, color: "yellow" },
+    { id: "add-unit", label: "Add Unit", icon: Plus, color: "pink" },
   ];
 
   const getActiveItemCount = () =>
@@ -154,6 +186,10 @@ export default function ManageStock() {
                 {activeTab === "edit" && (
                   <EditStock items={stockItems} onEdit={handleEditItem} />
                 )}
+                {activeTab === "add-category" && (
+                  <AddCategory onAdd={handleAddCategory} />
+                )}
+                {activeTab === "add-unit" && <AddUnit onAdd={handleAddUnit} />}
               </>
             )}
           </div>

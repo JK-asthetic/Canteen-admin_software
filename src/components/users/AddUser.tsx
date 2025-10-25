@@ -155,11 +155,12 @@ export function AddUser({ onAdd }: AddUserProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Assigned Canteen
+              Assigned Canteen <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <Building2 className="absolute left-3 top-3 w-5 h-5 text-gray-400 pointer-events-none" />
               <select
+                required
                 value={formData.canteen_id || ""}
                 onChange={(e) =>
                   setFormData({
@@ -170,7 +171,7 @@ export function AddUser({ onAdd }: AddUserProps) {
                 disabled={loadingCanteens}
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white disabled:bg-gray-100"
               >
-                <option value="">No canteen assigned</option>
+                <option value="">Select a canteen</option>
                 {canteens.map((canteen) => (
                   <option key={canteen._id} value={canteen._id}>
                     {canteen.name} - {canteen.location}

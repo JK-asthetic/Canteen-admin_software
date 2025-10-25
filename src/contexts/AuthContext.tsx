@@ -108,7 +108,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async (username: string, password: string) => {
     try {
       setIsLoading(true);
-      const response = await authApi.login(username, password);
+      const response = await authApi.adminLogin(username, password);
       const { token, user } = response;
 
       if (typeof window !== "undefined") {

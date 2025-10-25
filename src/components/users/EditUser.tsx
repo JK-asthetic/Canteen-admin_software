@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   User,
@@ -9,6 +9,8 @@ import {
   Save,
 } from "lucide-react";
 import { User as UserType, UpdateUserDto } from "@/types/user.types";
+import { getCanteens } from "@/api/canteen";
+import { Canteen } from "@/types/canteen.types";
 
 interface EditUserProps {
   users: UserType[];
@@ -19,6 +21,22 @@ export function EditUser({ users, onEdit }: EditUserProps) {
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState<UpdateUserDto>({});
+  const [canteens, setCanteens] = useState<Canteen[]>([]);
+  const [loadingCanteens, setLoadingCanteens] = useState(false);
+
+  useEffect(() => {
+    const fetchCanteens = async () => {
+      setLoadingCanteens(true);
+      try {
+        const fetchedCanteens = await getCanteens({ include_locked: false });
+        setCanteens(fetchedCanteens);
+      } catch (error) {
+        console.error("Error fetching canteens:", error);
+      }
+      setLoadingCanteens(false);
+    };
+    fetchCanteens();
+  }, []);
 
   const filteredUsers = users.filter(
     (user) =>
@@ -34,7 +52,10 @@ export function EditUser({ users, onEdit }: EditUserProps) {
       name: user.name,
       email: user.email,
       role: user.role,
-      canteen_id: typeof user.canteen_id === 'string' ? user.canteen_id : user.canteen_id?._id,
+      canteen_id:
+        typeof user.canteen_id === "string"
+          ? user.canteen_id
+          : user.canteen_id?._id,
     });
   };
 
@@ -211,19 +232,34 @@ export function EditUser({ users, onEdit }: EditUserProps) {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Assigned Canteen
+                  Assigned Canteen <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <Building2 className="absolute left-3 top-3 w-5 h-5 text-gray-400 pointer-events-none" />
-                  <input
-                    type="text"
+                  <select
+                    required
                     value={formData.canteen_id || ""}
                     onChange={(e) =>
-                      setFormData({ ...formData, canteen_id: e.target.value })
+                      setFormData({
+                        ...formData,
+                        canteen_id: e.target.value || undefined,
+                      })
                     }
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Enter canteen ID"
-                  />
+                    disabled={loadingCanteens}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none bg-white disabled:bg-gray-100"
+                  >
+                    <option value="">Select a canteen</option>
+                    {canteens.map((canteen) => (
+                      <option key={canteen._id} value={canteen._id}>
+                        {canteen.name} - {canteen.location}
+                      </option>
+                    ))}
+                  </select>
+                  {loadingCanteens && (
+                    <div className="absolute right-3 top-3">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-600"></div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

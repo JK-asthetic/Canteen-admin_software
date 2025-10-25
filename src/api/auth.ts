@@ -5,6 +5,10 @@ export const login = async (username: string, password: string): Promise<LoginRe
   return await apiClient.post('/auth/login', { username, password });
 };
 
+export const adminLogin = async (username: string, password: string): Promise<LoginResponse> => {
+  return await apiClient.post('/auth/admin/login', { username, password });
+};
+
 export const logout = async (): Promise<void> => {
   return await apiClient.post('/auth/logout');
 };

@@ -41,7 +41,7 @@ export default function MainDashboard() {
   };
 
   const handleCanteenClick = (canteenId: string): void => {
-    // router.push(`/canteen/${canteenId}`);
+    router.push(`/canteen/${canteenId}`);
   };
 
   const handleSignOut = async () => {
@@ -206,14 +206,8 @@ export default function MainDashboard() {
             {canteenList.map((canteen) => (
               <div
                 key={canteen._id}
-                onClick={() =>
-                  !canteen.is_locked && handleCanteenClick(canteen._id)
-                }
-                className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 ${
-                  canteen.is_locked
-                    ? "opacity-75 cursor-not-allowed"
-                    : "cursor-pointer hover:shadow-lg hover:border-blue-300 transform hover:-translate-y-1"
-                }`}
+                onClick={() => handleCanteenClick(canteen._id)}
+                className={`bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200`}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div

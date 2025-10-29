@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   description: "Manage your canteen inventory and sales",
 };
 
+
 export default function RootLayout({
   children,
 }: {

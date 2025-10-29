@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next-env.d.ts"
-  ],
+, "../canteen_store/utils/serverTime.ts", "../canteen_store/api/time.api.ts"  ],
   "exclude": [
     "node_modules"
   ]
